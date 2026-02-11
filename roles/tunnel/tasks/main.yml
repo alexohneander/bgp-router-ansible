@@ -1,0 +1,12 @@
+---
+- name: Enable gre0 interface
+  ansible.builtin.command: /sbin/ifconfig gre0 create
+  register: gre0_create
+  failed_when: gre0_create.rc != 0 and "already exists" not in (gre0_create.stderr | default(""))
+  changed_when: gre0_create.rc == 0
+
+- name: Enable gre0 interface at boot
+  community.general.sysrc:
+    name: ifconfig_gre0
+    state: present
+    value: "up"
