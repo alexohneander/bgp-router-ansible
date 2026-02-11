@@ -1,0 +1,73 @@
+---
+- name: Install rclone
+  shell: pkg install -y net/rclone
+  register: pkg_install_result
+  changed_when: "'already installed' not in pkg_install_result.stdout"
+
+- name: Install rsync
+  portinstall:
+    name: rsync
+    state: present
+
+- name: Create rclone config directory
+  file:
+    path: /root/.config/rclone
+    state: directory
+    mode: '0700'
+
+- name: Copy rclone config
+  template:
+    src: rclone.conf
+    dest: /root/.config/rclone/rclone.conf
+    mode: '0600'
+
+- name: Create mount point for backup
+  shell: mkdir -p /mnt/backup && chmod 0755 /mnt/backup
+  args:
+    creates: /mnt/backup
+
+- name: Enable fusefs_load in loader.conf
+  community.general.sysrc:
+    name: fusefs_load
+    state: present
+    value: "YES"
+    path: /boot/loader.conf
+
+- name: Enable fuse_load in loader.conf
+  community.general.sysrc:
+    name: fuse_load
+    state: present
+    value: "YES"
+    path: /boot/loader.conf
+
+- name: Copy rclone rc.d service script
+  template:
+    src: rclone.sh
+    dest: /usr/local/etc/rc.d/rclone
+    mode: '0755'
+    owner: root
+    group: wheel
+
+- name: Enable rclone service in rc.conf
+  community.general.sysrc:
+    name: rclone_enable
+    state: present
+    value: "YES"
+    path: /etc/rc.conf
+
+- name: Copy backup.sh script
+  template:
+    src: backup.sh
+    dest: /usr/local/bin/backup.sh
+    mode: '0755'
+    owner: root
+    group: wheel
+
+- name: Create cron job for backup
+  cron:
+    name: "Backup job"
+    minute: "0"
+    hour: "2"
+    user: root
+    job: "/usr/local/bin/backup.sh >/dev/null 2>&1"
+    state: present
