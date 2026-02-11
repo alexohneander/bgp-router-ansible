@@ -1,0 +1,25 @@
+---
+- name: Install fastfetch
+  portinstall:
+    name: fastfetch
+    state: present
+
+- name: Install btop
+  portinstall:
+    name: btop
+    state: present
+
+- name: Install htop
+  portinstall:
+    name: htop
+    state: present
+
+- name: Install wget
+  portinstall:
+    name: wget
+    state: present
+
+- name: Install curl
+  portinstall:
+    name: curl
+    state: present

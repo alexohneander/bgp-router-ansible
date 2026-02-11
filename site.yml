@@ -1,0 +1,16 @@
+---
+- name: Install BGP Router
+  hosts: all
+
+  remote_user: alex
+  become: true
+  become_method: su
+  become_user: root
+
+  vars:
+    ansible_become_pass: "{{ become_pass }}"
+
+  roles:
+    - common
+    - firewall
+    - frr

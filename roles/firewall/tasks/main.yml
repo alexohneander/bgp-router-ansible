@@ -1,0 +1,18 @@
+- name: Enable pf_enable in rc.conf
+  community.general.sysrc:
+    name: pf_enable
+    state: present
+    value: "YES"
+    path: /etc/rc.conf
+
+- name: Set pf_rules in rc.conf
+  community.general.sysrc:
+    name: pf_rules
+    state: present
+    value: "/etc/pf.conf"
+
+- name: Copy pf configuration
+  template: src=pf.conf dest=/etc/pf.conf
+
+- name: reload pf
+  ansible.builtin.command: /sbin/pfctl -f /etc/pf.conf

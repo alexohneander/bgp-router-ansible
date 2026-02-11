@@ -1,0 +1,13 @@
+---
+- name: Install frr Package
+  portinstall:
+    name: net/frr10
+    state: present
+
+- name: Create config directory
+  ansible.builtin.file:
+    path: /usr/local/etc/frr
+    state: directory
+
+- name: Copy frr configuration
+  template: src=frr.conf dest=/usr/local/etc/frr/frr.conf
