@@ -23,3 +23,8 @@
   portinstall:
     name: curl
     state: present
+
+- name: Install Vim
+  portinstall:
+    name: vim
+    state: present
