@@ -1,0 +1,84 @@
+---
+- name: Install Wireguard Package
+  portinstall:
+    name: wireguard-tools
+    state: present
+
+- name: Enable Wireguard on boot
+  community.general.sysrc:
+    name: wireguard_enable
+    state: present
+    value: "YES"
+
+- name: Write Private Key to file
+  copy:
+    content: "{{ wg_server_key }}"
+    dest: /usr/local/etc/wireguard/server.key
+    mode: '0600'
+
+- name: Generate Public Key from Private Key
+  ansible.builtin.shell: "wg pubkey < /usr/local/etc/wireguard/server.key > /usr/local/etc/wireguard/server.pub"
+  args:
+    creates: /usr/local/etc/wireguard/server.pub
+
+- name: Write Private Key Client A to file
+  copy:
+    content: "{{ wg_client_a_key }}"
+    dest: /usr/local/etc/wireguard/client_a.key
+    mode: '0600'
+
+- name: Generate Public Key from Private Key Client A
+  ansible.builtin.shell: "wg pubkey < /usr/local/etc/wireguard/client_a.key > /usr/local/etc/wireguard/client_a.pub"
+  args:
+    creates: /usr/local/etc/wireguard/client_a.pub
+
+- name: Read Public Key Client A
+  ansible.builtin.slurp:
+    src: /usr/local/etc/wireguard/client_a.pub
+  register: wg_client_a_pubkey_file
+
+- name: Write Private Key Client B to file
+  copy:
+    content: "{{ wg_client_b_key }}"
+    dest: /usr/local/etc/wireguard/client_b.key
+    mode: '0600'
+
+- name: Generate Public Key from Private Key Client B
+  ansible.builtin.shell: "wg pubkey < /usr/local/etc/wireguard/client_b.key > /usr/local/etc/wireguard/client_b.pub"
+  args:
+    creates: /usr/local/etc/wireguard/client_b.pub
+
+- name: Read Public Key Client B
+  ansible.builtin.slurp:
+    src: /usr/local/etc/wireguard/client_b.pub
+  register: wg_client_b_pubkey_file
+
+- name: Write Private Key Client C to file
+  copy:
+    content: "{{ wg_client_c_key }}"
+    dest: /usr/local/etc/wireguard/client_c.key
+    mode: '0600'
+
+- name: Generate Public Key from Private Key Client C
+  ansible.builtin.shell: "wg pubkey < /usr/local/etc/wireguard/client_c.key > /usr/local/etc/wireguard/client_c.pub"
+  args:
+    creates: /usr/local/etc/wireguard/client_c.pub
+
+- name: Read Public Key Client C
+  ansible.builtin.slurp:
+    src: /usr/local/etc/wireguard/client_c.pub
+  register: wg_client_c_pubkey_file
+
+- name: Set Wireguard public key facts
+  ansible.builtin.set_fact:
+    wg_client_a_pubkey: "{{ wg_client_a_pubkey_file.content | b64decode | trim }}"
+    wg_client_b_pubkey: "{{ wg_client_b_pubkey_file.content | b64decode | trim }}"
+    wg_client_c_pubkey: "{{ wg_client_c_pubkey_file.content | b64decode | trim }}"
+
+- name: Copy Wireguard configuration
+  template: src=wg0.conf dest=/usr/local/etc/wireguard/wg0.conf
+
+# - name: Enable and start Wireguard interface
+#   ansible.builtin.command: wg-quick up wg0
+#   args:
+#     creates: /var/run/wireguard/wg0.sock

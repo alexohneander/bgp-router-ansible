@@ -11,8 +11,9 @@
     ansible_become_pass: "{{ become_pass }}"
 
   roles:
-    - common
+    # - common
     - firewall
-    - frr
-    - tunnel
-    - backup
+    - bird
+    - wireguard
+    # - tunnel
+    # - backup

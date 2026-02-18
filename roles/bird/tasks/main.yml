@@ -1,0 +1,17 @@
+---
+- name: Install BIRD Package
+  portinstall:
+    name: net/bird2
+    state: present
+
+- name: Copy BIRD configuration
+  template: src=bird.conf dest=/usr/local/etc/bird.conf
+
+- name: Enable bird on boot
+  community.general.sysrc:
+    name: bird_enable
+    state: present
+    value: "YES"
+
+- name: Reconfigure BIRD
+  ansible.builtin.command: birdc configure

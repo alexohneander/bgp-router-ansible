@@ -13,19 +13,18 @@ ansible-playbook -i hosts site.yml --ask-vault-pass
                 │     Default-Free Zone        │
                 └─────────────┬────────────────┘
                               │
-                      AS209735 (Lagrange)
+                        AS209533 (iFog)
                               │ 
-                        Direct peering
+                           GRE Tunnel
                               │
                 ┌─────────────┴────────────────┐
                 │    bgp-router (BGP Router)   │
-                │    FreeBSD + FRR             │
-                │    AS20XXXX                  │
+                │    FreeBSD + BIRD            │
+                │    AS201033                  │
                 │    2a06:9801:5a::/48         │
                 └──────┬──────────────┬────────┘
                        │              │
-                    GIF tunnel     GIF tunnel
-                    (proto 41)     (proto 41)
+                   Wireguard      Wireguard
                        │              │
                 ┌──────┴─────┐   ┌────┴────────┐
                 │ fsn1       │   │ ksb1        │

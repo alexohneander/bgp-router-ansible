@@ -1,12 +1,28 @@
 ---
-- name: Enable gre0 interface
-  ansible.builtin.command: /sbin/ifconfig gre0 create
-  register: gre0_create
-  failed_when: gre0_create.rc != 0 and "already exists" not in (gre0_create.stderr | default(""))
-  changed_when: gre0_create.rc == 0
-
-- name: Enable gre0 interface at boot
+- name: Enable if_gre_load in loader.conf
   community.general.sysrc:
-    name: ifconfig_gre0
+    name: if_gre_load
     state: present
-    value: "up"
+    value: "YES"
+
+- name: Enable cloned_interfaces in rc.conf
+  community.general.sysrc:
+    name: cloned_interfaces
+    state: present
+    value: "gre0"
+    path: /etc/rc.conf
+
+# # 1. Interface erstellen
+# ifconfig gre0 create
+
+# # 2. Tunnel-Endpunkte setzen (Local und Remote Public IPs)
+# ifconfig gre0 tunnel 195.201.91.130 154.57.85.10
+
+# # 3. IPv4 Adresse im Tunnel setzen (deine Seite .130, Ziel .129)
+# ifconfig gre0 inet 10.249.7.130 10.249.7.129 netmask 255.255.255.252
+
+# # 4. IPv6 Adresse im Tunnel setzen
+# ifconfig gre0 inet6 2a0c:9a40:a005::33a/126
+
+# # 5. Interface aktivieren
+# ifconfig gre0 up
