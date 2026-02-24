@@ -18,3 +18,4 @@ ifconfig lo0 inet6 2a06:9801:5a::1/128 alias
 
 # 7. IPv6 Adresse für das wireguard routing von :1000::/64 setzen
 ifconfig wg0 inet6 2a06:9801:5a:1000::1/64 alias
+ifconfig wg0 inet6 2a06:9801:5a:4000::1/64 alias
